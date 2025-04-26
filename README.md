@@ -1,8 +1,7 @@
 # Simulacion_4K3_TP3
 Consignas del TP3 en el Readme.
 Una industria automotriz ha experimentado la siguiente frecuencia diaria de personas que se ausentan al trabajo tomando información de los en los últimos 100 días: 
-Número de obreros ausentes 
-Cantidad de días 
+
 ![image](https://github.com/user-attachments/assets/a67e2617-cc3c-4275-8eca-7dc2578e586d)
 
 a) Elabore una distribución de frecuencias para los datos anteriores. 
