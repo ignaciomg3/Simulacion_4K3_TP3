@@ -12,6 +12,16 @@ Columnas de Montecarlo
 | Costo por obrero (Opcional, default $30)
 | Ganancia del día 
 | Ganancia AC  
+| Contador beneficio > Y
+| P() beneficio diario > Y
 
+Lista de parametros:
+
+Días a simular
+Cantidad de días con x obreros ausentes (sum = 100)
+Valor de venta de productos
+Costo variable de fabricacón de productos
+Costo por obrero
+Valor Y de beneficio diario
 """
 
