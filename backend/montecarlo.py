@@ -1,3 +1,5 @@
+import random
+
 """
 Columnas de Montecarlo
 
@@ -26,7 +28,32 @@ Valor Y de beneficio diario
 """
 
 def calcular_obreros_ausentes(RND):
-    pass
+    # Define the frequency distribution for the number of absent workers
+    distribution = {
+        0: 36,
+        1: 38,
+        2: 19,
+        3: 6,
+        4: 1,
+    }
+
+    # Normalize the distribution to probabilities
+    total_days = sum(distribution.values())
+    probabilities = {k: v / total_days for k, v in distribution.items()}
+
+    # Generate cumulative probabilities
+    cumulative = []
+    cumulative_sum = 0
+    for k, p in probabilities.items():
+        cumulative_sum += p
+        cumulative.append((k, cumulative_sum))
+
+    # Determine the number of absent workers based on RND
+    for k, threshold in cumulative:
+        if RND <= threshold:
+            return k
+
+    return 0  # Default to 0 if no match (should not happen)
 
 def calcular_ganancia_dia(venta, costo_fabricacion, costo_obrero, obreros_totales, obreros_restantes, funcionamiento):
     if funcionamiento:
@@ -39,7 +66,7 @@ def calcular_ganancia_dia(venta, costo_fabricacion, costo_obrero, obreros_totale
 def calcular_siguiente_fila(fila_actual):
     dia = fila_actual[0] + 1
     obreros_totales = fila_actual[1] 
-    RND_obreros_ausentes = 0  # GENERAR_RANDOM
+    RND_obreros_ausentes = random.random()
     obreros_ausentes = calcular_obreros_ausentes(RND_obreros_ausentes)
     obreros_restantes = obreros_totales - obreros_ausentes
     fabrica_en_funcionamiento = (obreros_restantes >= 20)
@@ -57,20 +84,20 @@ def calcular_siguiente_fila(fila_actual):
              valor_y, contador_beneficio_mayor_y, probabilidad_beneficio_diario_mayor_y])
 
 def correr_simulacion(n, i, j, obreros_totales, valor_venta, costo_produccion, costo_obrero, valor_y):
-    dia = 0
+    dia = 1
     obreros_totales = obreros_totales
-    RND_obreros_ausentes = 0
-    obreros_ausentes = 0
-    obreros_restantes = obreros_totales
-    fabrica_en_funcionamiento = True
+    RND_obreros_ausentes = random.random()
+    obreros_ausentes = calcular_obreros_ausentes(RND_obreros_ausentes)
+    obreros_restantes = obreros_totales - obreros_ausentes
+    fabrica_en_funcionamiento = (obreros_restantes >= 20)
     valor_venta_productos = valor_venta
     costo_fabricacion_productos = costo_produccion
     costo_por_obrero = costo_obrero
-    ganancia_dia = 0
-    ganancia_acumulada = 0
+    ganancia_dia = calcular_ganancia_dia(valor_venta_productos, costo_fabricacion_productos, costo_por_obrero, obreros_totales, obreros_restantes, fabrica_en_funcionamiento)
+    ganancia_acumulada = ganancia_dia
     valor_y = valor_y
-    contador_beneficio_mayor_y = 0
-    probabilidad_beneficio_diario_mayor_y = 0
+    contador_beneficio_mayor_y = 1 if ganancia_dia > valor_y else 0
+    probabilidad_beneficio_diario_mayor_y = contador_beneficio_mayor_y / dia
 
 
     dias_entre_i_y_j = []
@@ -91,18 +118,16 @@ def correr_simulacion(n, i, j, obreros_totales, valor_venta, costo_produccion, c
                    probabilidad_beneficio_diario_mayor_y]
 
     for _ in range(n):
-        if i <= fila_actual[0] <= j:
+        if i <= fila_actual[0] <= j or fila_actual[0] == n:
             dias_entre_i_y_j.append(fila_actual)
         fila_actual = calcular_siguiente_fila(fila_actual)
 
+    return (dias_entre_i_y_j)
 
 def simular_n_dias(n, i, j, obreros_totales, valor_venta, costo_produccion, costo_obrero, valor_y):
-    # n = int(input("Ingrese la cantidad de días a simular: "))
-    # i = int(input("Ingrese el día a partir del cual mostrar la simulación: "))
-    # j = int(input("Ingrese el día hasta el cual mostrar la simulación: "))
-
-    for i in range(4):
-        correr_simulacion(n, i, j, obreros_totales, valor_venta, costo_produccion, costo_obrero, valor_y)
+    return (correr_simulacion(n, i, j, obreros_totales, valor_venta, costo_produccion, costo_obrero, valor_y))
+    # for i in range(4):
+        # correr_simulacion(n, i, j, i+21, valor_venta, costo_produccion, costo_obrero, valor_y)
 
 if __name__ == "__main__":
     simular_n_dias(100000, 99990, 100000, 20, 4000, 2400, 30, 1000)

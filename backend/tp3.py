@@ -27,34 +27,33 @@ Valor Y de beneficio diario
 
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from montecarlo import correr_simulacion
 
 app = Flask(__name__)
 
 CORS(app)
 
-# Ejemplo endpoint get
-@app.route('/api/data')
-def get_data():
-    return jsonify({'message': 'Test React Python'})
-
-# Ejemplo endpoint post
-@app.route('/api/calculate', methods=['POST'])
-def calculate():
+@app.route('/api/simular', methods=['POST'])
+def simulate():
     data = request.get_json()
-    number = data.get('number')
-
-    if number is None:
-        return jsonify({'error': 'No number provided'}), 400
 
     try:
-        number = int(number)
-    except ValueError:
-        return jsonify({'error': 'Invalid number'}), 400
+        n = int(data.get('n'))
+        i = int(data.get('i'))
+        j = int(data.get('j'))
+        obreros_totales = int(data.get('obreros_totales'))
+        valor_venta = int(data.get('valor_venta', 4000))
+        costo_produccion = int(data.get('costo_produccion', 2400))
+        costo_obrero = int(data.get('costo_obrero', 30))
+        valor_y = int(data.get('valor_y', 1000))
+    except (ValueError, TypeError):
+        return jsonify({'error': 'Parámetros inválidos'}), 400
 
-    # Your calculation logic here
-    result = number * 2  # Example: multiply the number by 2
-
-    return jsonify({'result': result})
-
+    # Correr la simulación
+    try:
+        resultado = correr_simulacion(n, i, j, obreros_totales, valor_venta, costo_produccion, costo_obrero, valor_y)
+        return jsonify({'results': resultado})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=False)
