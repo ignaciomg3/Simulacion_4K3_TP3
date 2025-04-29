@@ -1,5 +1,6 @@
 // src/App.js
 import { useState, useEffect } from 'react';
+import './App.css';
 
 function App() {
   const [parameters, setParameters] = useState({
@@ -59,7 +60,8 @@ function App() {
   return (
     <div>
       <h1>Simulación de Montecarlo - Ausentismo en Industria Automotríz</h1>
-      <div>
+
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
         <label>
           Días a simular (n):
           <input
@@ -67,6 +69,7 @@ function App() {
             name="n"
             value={parameters.n}
             onChange={handleChange}
+            style={{ marginLeft: '10px', width: '50%' }}
           />
         </label>
         <label>
@@ -76,6 +79,7 @@ function App() {
             name="i"
             value={parameters.i}
             onChange={handleChange}
+            style={{ marginLeft: '10px', width: '50%' }}
           />
         </label>
         <label>
@@ -85,6 +89,7 @@ function App() {
             name="j"
             value={parameters.j}
             onChange={handleChange}
+            style={{ marginLeft: '10px', width: '50%' }}
           />
         </label>
         <label>
@@ -94,6 +99,7 @@ function App() {
             name="obreros_totales"
             value={parameters.obreros_totales}
             onChange={handleChange}
+            style={{ marginLeft: '10px', width: '25%' }}
           />
         </label>
         <label>
@@ -103,6 +109,7 @@ function App() {
             name="valor_venta"
             value={parameters.valor_venta}
             onChange={handleChange}
+            style={{ marginLeft: '10px', width: '35%' }}
           />
         </label>
         <label>
@@ -112,6 +119,7 @@ function App() {
             name="costo_produccion"
             value={parameters.costo_produccion}
             onChange={handleChange}
+            style={{ marginLeft: '10px', width: '35%' }}
           />
         </label>
         <label>
@@ -121,6 +129,7 @@ function App() {
             name="costo_obrero"
             value={parameters.costo_obrero}
             onChange={handleChange}
+            style={{ marginLeft: '10px', width: '30%' }}
           />
         </label>
         <label>
@@ -130,6 +139,7 @@ function App() {
             name="valor_y"
             value={parameters.valor_y}
             onChange={handleChange}
+            style={{ marginLeft: '10px', width: '35%' }}
           />
         </label>
         <button onClick={handleSubmit}>Correr Simulación</button>
@@ -138,6 +148,17 @@ function App() {
       {results && (
         <div>
           <h2>Resultados de la simulación</h2>
+            <h3>
+              {results && (
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
+                  Parámetros de la simulación: <br />
+                  Días a simular: {parameters.n} | Día inicial: {parameters.i} | Día final: {parameters.j} |
+                  Obreros totales: {parameters.obreros_totales} | Valor de venta: {parameters.valor_venta} |
+                  Costo de producción: {parameters.costo_produccion} | Costo de obreros: {parameters.costo_obrero} |
+                  Valor Y: {parameters.valor_y}
+                </div>
+              )}
+            </h3>
           <table border="1">
             <thead>
               <tr>

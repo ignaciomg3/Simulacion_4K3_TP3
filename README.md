@@ -37,3 +37,10 @@ c) Teniendo en cuenta los siguientes datos:
   Para esta simulación calcule: 
   1) el beneficio que obtendría la industria automotriz:
   2) La probabilidad de obtener un beneficio diario mayor a un valor {y}
+
+ToDo:
+el valor de venta deberia ser 0 cuando la fabrica no este en funcionamiento
+revisar si quedaron cosas en ingles
+algunas columnas de la tabla tienen el nombre mal
+mostrar los parametros en el nombre de la simulacion
+mostrar todas las simulaciones para 20 21 22 23 24 empleados? (no entendi bien ese punto)
