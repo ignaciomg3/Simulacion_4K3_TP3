@@ -93,26 +93,23 @@ function App() {
           />
         </label>
         <label>
-          Obreros totales:
-          <input
-            type="number"
-            name="obreros_totales"
-            value={parameters.obreros_totales}
-            onChange={handleChange}
-            style={{ marginLeft: '10px', width: '25%' }}
-          />
+        Obreros totales:
+        <select
+          name="obreros_totales"
+          value={parameters.obreros_totales}
+          onChange={handleChange}
+          style={{ marginLeft: '10px', width: '25%' }}
+        >
+          <option value="">Seleccione</option>
+          <option value="20">20</option>
+          <option value="21">21</option>
+          <option value="22">22</option>
+          <option value="23">23</option>
+          <option value="24">24</option>
+        </select>
         </label>
         <label>
-          Valor de venta:
-          <input
-            type="number"
-            name="valor_venta"
-            value={parameters.valor_venta}
-            onChange={handleChange}
-            style={{ marginLeft: '10px', width: '35%' }}
-          />
-        </label>
-        <label>
+        
           Costo de producción:
           <input
             type="number"
