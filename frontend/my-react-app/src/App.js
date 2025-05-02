@@ -23,6 +23,14 @@ function App() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+  
+    // Validar si el campo debe ser mayor o igual a 0
+    const camposNoNegativos = ['n', 'i', 'j', 'costo_produccion', 'costo_obrero', 'valor_y'];
+    if (camposNoNegativos.includes(name) && parseInt(value) < 0) {
+      alert(`El campo ${name} no puede ser menor a 0.`);
+      return;
+    }
+  
     setParameters({ ...parameters, [name]: value });
   };
 
