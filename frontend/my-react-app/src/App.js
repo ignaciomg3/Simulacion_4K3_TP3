@@ -12,6 +12,12 @@ function App() {
     costo_produccion: 2400,
     costo_obrero: 30,
     valor_y: 1000,
+    dia_0: 36,
+    dia_1: 38,
+    dia_2: 19,
+    dia_3: 6,
+    dia_4: 1,
+    dia_5: 0,
   });
   const [results, setResults] = useState(null);
 
@@ -20,7 +26,37 @@ function App() {
     setParameters({ ...parameters, [name]: value });
   };
 
+  const validateForm = () => {
+    // Check for blank fields
+    for (const key in parameters) {
+      if (parameters[key] === '' || parameters[key] === null) {
+        alert(`El campo ${key} no puede estar vacío.`);
+        return false;
+      }
+    }
+
+    // Check if the sum of day variables equals 100
+    const daySum =
+      parseInt(parameters.dia_0) +
+      parseInt(parameters.dia_1) +
+      parseInt(parameters.dia_2) +
+      parseInt(parameters.dia_3) +
+      parseInt(parameters.dia_4) +
+      parseInt(parameters.dia_5);
+
+    if (daySum !== 100) {
+      alert('La suma de los días con ausencias debe ser igual a 100.');
+      return false;
+    }
+
+    return true;
+  };
+
   const handleSubmit = async () => {
+    if (!validateForm()) {
+      return;
+    }
+
     try {
       const response = await fetch('http://localhost:5000/api/simular', {
         method: 'POST',
@@ -135,6 +171,66 @@ function App() {
             type="number"
             name="valor_y"
             value={parameters.valor_y}
+            onChange={handleChange}
+            style={{ marginLeft: '10px', width: '35%' }}
+          />
+        </label>
+        <label>
+          Días con 0 ausentes:
+          <input
+            type="number"
+            name="dia_0"
+            value={parameters.dia_0}
+            onChange={handleChange}
+            style={{ marginLeft: '10px', width: '35%' }}
+          />
+        </label>
+        <label>
+          Días con 1 ausente:
+          <input
+            type="number"
+            name="dia_1"
+            value={parameters.dia_1}
+            onChange={handleChange}
+            style={{ marginLeft: '10px', width: '35%' }}
+          />
+        </label>
+        <label>
+          Días con 2 ausentes:
+          <input
+            type="number"
+            name="dia_2"
+            value={parameters.dia_2}
+            onChange={handleChange}
+            style={{ marginLeft: '10px', width: '35%' }}
+          />
+        </label>
+        <label>
+          Días con 3 ausentes:
+          <input
+            type="number"
+            name="dia_3"
+            value={parameters.dia_3}
+            onChange={handleChange}
+            style={{ marginLeft: '10px', width: '35%' }}
+          />
+        </label>
+        <label>
+          Días con 4 ausentes:
+          <input
+            type="number"
+            name="dia_4"
+            value={parameters.dia_4}
+            onChange={handleChange}
+            style={{ marginLeft: '10px', width: '35%' }}
+          />
+        </label>
+        <label>
+          Días con 5 ausentes:
+          <input
+            type="number"
+            name="dia_5"
+            value={parameters.dia_5}
             onChange={handleChange}
             style={{ marginLeft: '10px', width: '35%' }}
           />

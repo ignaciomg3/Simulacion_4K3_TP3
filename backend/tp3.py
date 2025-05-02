@@ -46,12 +46,18 @@ def simulate():
         costo_produccion = int(data.get('costo_produccion', 2400))
         costo_obrero = int(data.get('costo_obrero', 30))
         valor_y = int(data.get('valor_y', 1000))
+        dia_0 = int(data.get('dia_0', 36))
+        dia_1 = int(data.get('dia_1', 38))
+        dia_2 = int(data.get('dia_2', 19))
+        dia_3 = int(data.get('dia_3', 6))
+        dia_4 = int(data.get('dia_4', 1))
+        dia_5 = int(data.get('dia_5', 0))
     except (ValueError, TypeError):
         return jsonify({'error': 'Parámetros inválidos'}), 400
 
     # Correr la simulación
     try:
-        resultado = correr_simulacion(n, i, j, obreros_totales, valor_venta, costo_produccion, costo_obrero, valor_y)
+        resultado = correr_simulacion(n, i, j, obreros_totales, valor_venta, costo_produccion, costo_obrero, valor_y, dia_0, dia_1, dia_2, dia_3, dia_4, dia_5)
         return jsonify({'results': resultado})
     except Exception as e:
         return jsonify({'error': str(e)}), 500

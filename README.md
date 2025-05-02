@@ -1,3 +1,8 @@
+INDICACIONES PARA INICIALIZAR
+Instalar Flask y flask-cors (pip install Flask flask-cors)
+En una terminal escribir "cd frontend/my-react-app", despues "npm i" y despues "npm start"
+Ejecutar en el backend el programa tp3.py
+
 # Simulacion_4K3_TP3
 Desarrollar un aplicativo con interfaz gráfica (no modo caracter) amigable (que no haga parpadeos al
 scrollear), donde los parámetros ingresados se puedan visualizar luego de realizar la simulación.
@@ -39,8 +44,7 @@ c) Teniendo en cuenta los siguientes datos:
   2) La probabilidad de obtener un beneficio diario mayor a un valor {y}
 
 ToDo:
-el valor de venta deberia ser 0 cuando la fabrica no este en funcionamiento
 revisar si quedaron cosas en ingles
 algunas columnas de la tabla tienen el nombre mal
 mostrar los parametros en el nombre de la simulacion
-mostrar todas las simulaciones para 20 21 22 23 24 empleados? (no entendi bien ese punto)
+mostrar todas las simulaciones para 21 22 23 24 empleados? (no entendi bien ese punto)

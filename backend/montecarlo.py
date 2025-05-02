@@ -27,14 +27,17 @@ Costo por obrero
 Valor Y de beneficio diario
 """
 
-def calcular_obreros_ausentes(RND):
+def calcular_obreros_ausentes(RND, dias_0_ausentes, dias_1_ausentes, dias_2_ausentes, dias_3_ausentes, dias_4_ausentes, dias_5_ausentes):
+    if int(dias_0_ausentes + dias_1_ausentes + dias_2_ausentes + dias_3_ausentes + dias_4_ausentes + dias_5_ausentes) != 100:
+        return 0
     # Define the frequency distribution for the number of absent workers
     distribution = {
-        0: 36,
-        1: 38,
-        2: 19,
-        3: 6,
-        4: 1,
+        0: dias_0_ausentes,
+        1: dias_1_ausentes,
+        2: dias_2_ausentes,
+        3: dias_3_ausentes,
+        4: dias_4_ausentes,
+        5: dias_5_ausentes,
     }
 
     # Normalize the distribution to probabilities
@@ -63,14 +66,14 @@ def calcular_ganancia_dia(venta, costo_fabricacion, costo_obrero, obreros_totale
         ganancia = venta - costo_fabricacion - (obreros_totales * costo_obrero)
         return (ganancia)
 
-def calcular_siguiente_fila(fila_actual):
+def calcular_siguiente_fila(fila_actual, dia_0, dia_1, dia_2, dia_3, dia_4, dia_5, valor_venta):
     dia = fila_actual[0] + 1
     obreros_totales = fila_actual[1] 
     RND_obreros_ausentes = random.random()
-    obreros_ausentes = calcular_obreros_ausentes(RND_obreros_ausentes)
+    obreros_ausentes = calcular_obreros_ausentes(RND_obreros_ausentes, dia_0, dia_1, dia_2, dia_3, dia_4, dia_5)
     obreros_restantes = obreros_totales - obreros_ausentes
     fabrica_en_funcionamiento = (obreros_restantes >= 20)
-    valor_venta_productos = fila_actual[6]
+    valor_venta_productos = valor_venta if fabrica_en_funcionamiento else 0
     costo_fabricacion_productos = fila_actual[7]
     costo_por_obrero = fila_actual[8]
     ganancia_dia = calcular_ganancia_dia(valor_venta_productos, costo_fabricacion_productos, costo_por_obrero, obreros_totales, obreros_restantes, fabrica_en_funcionamiento)
@@ -83,11 +86,11 @@ def calcular_siguiente_fila(fila_actual):
              valor_venta_productos, costo_fabricacion_productos, costo_por_obrero, ganancia_dia, ganancia_acumulada,
              valor_y, contador_beneficio_mayor_y, probabilidad_beneficio_diario_mayor_y])
 
-def correr_simulacion(n, i, j, obreros_totales, valor_venta, costo_produccion, costo_obrero, valor_y):
+def correr_simulacion(n, i, j, obreros_totales, valor_venta, costo_produccion, costo_obrero, valor_y, dia_0, dia_1, dia_2, dia_3, dia_4, dia_5):
     dia = 1
     obreros_totales = obreros_totales
     RND_obreros_ausentes = random.random()
-    obreros_ausentes = calcular_obreros_ausentes(RND_obreros_ausentes)
+    obreros_ausentes = calcular_obreros_ausentes(RND_obreros_ausentes, dia_0, dia_1, dia_2, dia_3, dia_4, dia_5)
     obreros_restantes = obreros_totales - obreros_ausentes
     fabrica_en_funcionamiento = (obreros_restantes >= 20)
     valor_venta_productos = valor_venta
@@ -120,14 +123,12 @@ def correr_simulacion(n, i, j, obreros_totales, valor_venta, costo_produccion, c
     for _ in range(n):
         if i <= fila_actual[0] <= j or fila_actual[0] == n:
             dias_entre_i_y_j.append(fila_actual)
-        fila_actual = calcular_siguiente_fila(fila_actual)
+        fila_actual = calcular_siguiente_fila(fila_actual, dia_0, dia_1, dia_2, dia_3, dia_4, dia_5, valor_venta_productos)
 
     return (dias_entre_i_y_j)
 
-def simular_n_dias(n, i, j, obreros_totales, valor_venta, costo_produccion, costo_obrero, valor_y):
-    return (correr_simulacion(n, i, j, obreros_totales, valor_venta, costo_produccion, costo_obrero, valor_y))
-    # for i in range(4):
-        # correr_simulacion(n, i, j, i+21, valor_venta, costo_produccion, costo_obrero, valor_y)
+def simular_n_dias(n, i, j, obreros_totales, valor_venta, costo_produccion, costo_obrero, valor_y, dia_0 = 36, dia_1 = 38, dia_2 = 19, dia_3 = 6, dia_4 = 1, dia_5 = 0):
+    return (correr_simulacion(n, i, j, obreros_totales, valor_venta, costo_produccion, costo_obrero, valor_y, dia_0, dia_1, dia_2, dia_3, dia_4, dia_5))
 
 if __name__ == "__main__":
     simular_n_dias(100000, 99990, 100000, 20, 4000, 2400, 30, 1000)
