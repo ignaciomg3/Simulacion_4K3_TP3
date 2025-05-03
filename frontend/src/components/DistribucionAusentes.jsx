@@ -5,9 +5,9 @@ const AbsenteeDistribution = ({
   onDistributionChange,
   validationError
 }) => {
-  // Guardamos los valores originales de frecuencia y probabilidad
-  const [baseFrequencies] = useState(distributionData.map(item => item.frequency));
-  const [baseProbabilities] = useState(distributionData.map(item => item.probability));
+  // Store the ORIGINAL base frequencies and default probabilities
+  const [baseFrequencies] = useState(() => distributionData.map(item => item.frequency));
+  const [baseProbabilities] = useState(() => distributionData.map(item => item.probability));
   const [localDistribution, setLocalDistribution] = useState(distributionData);
   
   // Actualizar cuando cambien datos externos
@@ -17,12 +17,15 @@ const AbsenteeDistribution = ({
   
   // Función para restaurar valores por defecto
   const resetToDefaults = () => {
+    // Copy BASE FREQUENCIES into PROBABILITY column
     const resetDistribution = localDistribution.map((item, index) => ({
       ...item,
-      probability: baseProbabilities[index]
+      probability: baseFrequencies[index], // Copy from base frequencies to probability
+      frequency: baseFrequencies[index]    // Keep frequency as base frequency
     }));
     
     setLocalDistribution(resetDistribution);
+    // Immediately call onDistributionChange to propagate the reset
     onDistributionChange(resetDistribution);
   };
   
