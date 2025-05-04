@@ -25,9 +25,10 @@ Costo por obrero
 Valor Y de beneficio diario
 """
 
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
 from montecarlo import correr_simulacion
+import pandas as pd
 
 app = Flask(__name__)
 
@@ -48,6 +49,7 @@ def simulate():
         valor_y = int(data.get('valor_y', 1000))
         dia_0 = int(data.get('dia_0', 36))
         dia_1 = int(data.get('dia_1', 38))
+        print("bbbbbb")
         dia_2 = int(data.get('dia_2', 19))
         dia_3 = int(data.get('dia_3', 6))
         dia_4 = int(data.get('dia_4', 1))
@@ -61,5 +63,27 @@ def simulate():
         return jsonify({'results': resultado})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+# ESTA FUNCION ES UNA MIERDA NO SE QUE HACE
+# @app.route('/api/export', methods=['POST'])
+# def export_to_excel():
+#     # Example data to export
+#     print("ccccc")
+#     data = {
+#         'Día': [1, 2, 3],
+#         'Ganancia': [100, 200, 300],
+#         'Costo': [50, 60, 70]
+#     }
+
+#     # Create a DataFrame
+#     df = pd.DataFrame(data)
+
+#     # Save to an Excel file
+#     file_path = './simulacion.xlsx'
+#     df.to_excel(file_path, index=False)
+
+#     # Send the file to the frontend
+#     return send_file(file_path, as_attachment=True)
+
 if __name__ == "__main__":
     app.run(debug=False)

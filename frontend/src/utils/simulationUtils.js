@@ -34,7 +34,7 @@ export const processApiResults = (results) => {
     
     return {
       totalProfit: lastDay.cumulativeProfit,
-      averageProfit: lastDay.cumulativeProfit / dailyResults.length,
+      averageProfit: lastDay.cumulativeProfit / lastDay.day,
       operationalDays,
       nonOperationalDays,
       operationalPercentage: (operationalDays / dailyResults.length) * 100,

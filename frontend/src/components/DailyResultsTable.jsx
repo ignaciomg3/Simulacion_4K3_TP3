@@ -20,7 +20,7 @@ const TableRow = memo(({ day, index, targetProfit }) => (
     <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">{day.costs.toFixed(2)}</td>
     <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">{day.laborCosts.toFixed(2)}</td>
     <td className={`px-4 py-3 whitespace-nowrap text-sm font-medium ${
-      day.profit >= targetProfit ? 'text-green-600' : 'text-red-600'
+      day.profit > targetProfit ? 'text-green-600' : 'text-red-600'
     }`}>
       {day.profit.toFixed(2)}
     </td>
