@@ -64,26 +64,31 @@ def simulate():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-# ESTA FUNCION ES UNA MIERDA NO SE QUE HACE
-# @app.route('/api/export', methods=['POST'])
-# def export_to_excel():
-#     # Example data to export
-#     print("ccccc")
-#     data = {
-#         'Día': [1, 2, 3],
-#         'Ganancia': [100, 200, 300],
-#         'Costo': [50, 60, 70]
-#     }
+@app.route('/api/export', methods=['POST'])
+def export_to_excel():
+    data = request.get_json()
 
-#     # Create a DataFrame
-#     df = pd.DataFrame(data)
+    try:
+        # Validate input data
+        if not isinstance(data, list) or not all(isinstance(row, list) and len(row) == 3 for row in data):
+            return jsonify({'error': 'Invalid data format. Expected an array of arrays with 3 elements each.'}), 400
 
-#     # Save to an Excel file
-#     file_path = './simulacion.xlsx'
-#     df.to_excel(file_path, index=False)
+        # Convert data values to integers, but keep labels as they are
+        data = [[int(value) if isinstance(value, str) and value.isdigit() else value for value in row] for row in data]
 
-#     # Send the file to the frontend
-#     return send_file(file_path, as_attachment=True)
+        # Create a DataFrame
+        df = pd.DataFrame(data, columns=["1", "2", "3"])
+
+        # Save to an Excel file in the "backend" folder
+        import os
+        os.makedirs('./backend', exist_ok=True)
+        file_path = './backend/simulacion.xlsx'
+        df.to_excel(file_path, index=False)
+        
+        return jsonify({'message': 'File saved successfully', 'file_path': file_path}), 200
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == "__main__":
     app.run(debug=False)
