@@ -28,7 +28,9 @@ Valor Y de beneficio diario
 from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
 from montecarlo import correr_simulacion
+from io import BytesIO
 import pandas as pd
+import json
 
 app = Flask(__name__)
 
@@ -64,31 +66,79 @@ def simulate():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@app.route('/api/export', methods=['POST'])
-def export_to_excel():
-    data = request.get_json()
-
+@app.route('/api/export-excel', methods=['POST'])
+def export_excel():
     try:
-        # Validate input data
-        if not isinstance(data, list) or not all(isinstance(row, list) and len(row) == 3 for row in data):
-            return jsonify({'error': 'Invalid data format. Expected an array of arrays with 3 elements each.'}), 400
-
-        # Convert data values to integers, but keep labels as they are
-        data = [[int(value) if isinstance(value, str) and value.isdigit() else value for value in row] for row in data]
-
-        # Create a DataFrame
-        df = pd.DataFrame(data, columns=["1", "2", "3"])
-
-        # Save to an Excel file in the "backend" folder
-        import os
-        os.makedirs('./backend', exist_ok=True)
-        file_path = './backend/simulacion.xlsx'
-        df.to_excel(file_path, index=False)
+        # Get the simulation results from the request
+        data = request.json
+        if not data:
+            return jsonify({"error": "No data provided"}), 400
+            
+        print("Received data:", json.dumps(data)[:1000])  # Print first 1000 chars for debugging
+            
+        simulation_results = data.get('simulationResults')
+        if not simulation_results:
+            return jsonify({"error": "No simulation results provided"}), 400
         
-        return jsonify({'message': 'File saved successfully', 'file_path': file_path}), 200
-
+        # Check if dailyResults exist
+        if 'dailyResults' not in simulation_results or not simulation_results['dailyResults']:
+            return jsonify({"error": "No daily results found in simulation data"}), 400
+        
+        # Create a BytesIO object to store the Excel file
+        output = BytesIO()
+        
+        # Create a Pandas Excel writer using the BytesIO object
+        with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+            # Convert daily results to DataFrame and write to Excel
+            # Map the columns to match your table structure
+            daily_data = []
+            for day in simulation_results['dailyResults']:
+                daily_data.append({
+                    'Día': day.get('day', ''),
+                    'RND': day.get('rnd', 0),
+                    'Ausentes': day.get('absentWorkers', 0),
+                    'Presentes': day.get('presentWorkers', 0),
+                    'Operativo': 'Sí' if day.get('operational', False) else 'No',
+                    'Ingresos ($)': day.get('revenue', 0),
+                    'Costos Prod. ($)': day.get('costs', 0),
+                    'Costos Personal ($)': day.get('laborCosts', 0),
+                    'Beneficio ($)': day.get('profit', 0),
+                    'Beneficio AC ($)': day.get('cumulativeProfit', 0)
+                })
+            
+            daily_df = pd.DataFrame(daily_data)
+            daily_df.to_excel(writer, sheet_name='Resultados Diarios', index=False)
+            
+            # Get workbook and worksheet objects to format cells
+            workbook = writer.book
+            format_currency = workbook.add_format({'num_format': '$#,##0.00'})
+            format_decimal = workbook.add_format({'num_format': '0.0000'})
+            
+            # Apply formatting to daily results sheet
+            daily_sheet = writer.sheets['Resultados Diarios']
+            daily_sheet.set_column('B:B', 12, format_decimal)  # RND column
+            daily_sheet.set_column('F:F', 15, format_currency)  # Revenue column
+            daily_sheet.set_column('G:G', 15, format_currency)  # Production costs column
+            daily_sheet.set_column('H:H', 15, format_currency)  # Labor costs column
+            daily_sheet.set_column('I:I', 15, format_currency)  # Profit column
+            daily_sheet.set_column('J:J', 15, format_currency)  # Cumulative profit column
+        
+        # Reset the pointer to the start of the BytesIO object
+        output.seek(0)
+        
+        # Return the Excel file as an attachment
+        return send_file(
+            output, 
+            mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            as_attachment=True,
+            download_name='simulacion_montecarlo.xlsx'
+        )
+        
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        import traceback
+        print(f"Excel export error: {str(e)}")
+        print(traceback.format_exc())  # Print full traceback for debugging
+        return jsonify({"error": str(e)}), 500
 
 if __name__ == "__main__":
     app.run(debug=False)
