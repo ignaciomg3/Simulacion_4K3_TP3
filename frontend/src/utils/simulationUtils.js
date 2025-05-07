@@ -18,7 +18,7 @@ export const processApiResults = (results) => {
         operational: day[5], // Fabrica en funcionamiento
         revenue: day[6], // Venta productos
         costs: day[7], // Costo produccion
-        laborCosts: day[8] * day[1], // Costo por obrero * total obreros
+        laborCosts: day[5] ? day[8] * day[4] : day[8] * day[1], // if operational: costoXobrero * obrerosRestantes else costoXobrero * obrerosTotales
         profit: day[9], // Ganancia del día
         cumulativeProfit: day[10], // Ganancia acumulada
         targetValue: day[11], // Valor Y
