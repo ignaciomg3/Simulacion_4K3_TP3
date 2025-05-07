@@ -61,10 +61,10 @@ def calcular_obreros_ausentes(RND, dias_0_ausentes, dias_1_ausentes, dias_2_ause
 def calcular_ganancia_dia(venta, costo_fabricacion, costo_obrero, obreros_totales, obreros_restantes, funcionamiento):
     if funcionamiento:
         ganancia = venta - costo_fabricacion - (obreros_restantes * costo_obrero)
-        return (ganancia)
+        return ganancia
     else:
-        ganancia = venta - costo_fabricacion - (obreros_totales * costo_obrero)
-        return (ganancia)
+        ganancia = 0 - (obreros_totales * costo_obrero)
+        return ganancia
 
 def calcular_siguiente_fila(fila_actual, dia_0, dia_1, dia_2, dia_3, dia_4, dia_5, valor_venta):
     dia = fila_actual[0] + 1
@@ -87,20 +87,20 @@ def calcular_siguiente_fila(fila_actual, dia_0, dia_1, dia_2, dia_3, dia_4, dia_
              valor_y, contador_beneficio_mayor_y, probabilidad_beneficio_diario_mayor_y])
 
 def correr_simulacion(n, i, j, obreros_totales, valor_venta, costo_produccion, costo_obrero, valor_y, dia_0, dia_1, dia_2, dia_3, dia_4, dia_5):
-    dia = 1
+    dia = 0
     obreros_totales = obreros_totales
-    RND_obreros_ausentes = random.random()
-    obreros_ausentes = calcular_obreros_ausentes(RND_obreros_ausentes, dia_0, dia_1, dia_2, dia_3, dia_4, dia_5)
-    obreros_restantes = obreros_totales - obreros_ausentes
-    fabrica_en_funcionamiento = (obreros_restantes >= 20)
+    RND_obreros_ausentes = None
+    obreros_ausentes = None
+    obreros_restantes = None
+    fabrica_en_funcionamiento = False
     valor_venta_productos = valor_venta
     costo_fabricacion_productos = costo_produccion
     costo_por_obrero = costo_obrero
-    ganancia_dia = calcular_ganancia_dia(valor_venta_productos, costo_fabricacion_productos, costo_por_obrero, obreros_totales, obreros_restantes, fabrica_en_funcionamiento)
-    ganancia_acumulada = ganancia_dia
+    ganancia_dia = 0
+    ganancia_acumulada = 0
     valor_y = valor_y
-    contador_beneficio_mayor_y = 1 if ganancia_dia > valor_y else 0
-    probabilidad_beneficio_diario_mayor_y = contador_beneficio_mayor_y / dia
+    contador_beneficio_mayor_y = 0
+    probabilidad_beneficio_diario_mayor_y = None
 
 
     dias_entre_i_y_j = []
@@ -120,7 +120,7 @@ def correr_simulacion(n, i, j, obreros_totales, valor_venta, costo_produccion, c
                    contador_beneficio_mayor_y, 
                    probabilidad_beneficio_diario_mayor_y]
 
-    for _ in range(n):
+    for _ in range(n + 1):
         if i <= fila_actual[0] <= j or fila_actual[0] == n:
             dias_entre_i_y_j.append(fila_actual)
         fila_actual = calcular_siguiente_fila(fila_actual, dia_0, dia_1, dia_2, dia_3, dia_4, dia_5, valor_venta_productos)
