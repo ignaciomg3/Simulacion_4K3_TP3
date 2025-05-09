@@ -73,6 +73,13 @@ const SimulationResults = ({ results, numWorkers, targetProfit }) => {
     }
   };
 
+  // Total days simulated from results or use a default (100000)
+  const totalDaysSimulated = results.totalDaysSimulated || 100000;
+  
+  // Get last day info for full statistics
+  const lastDayInfo = results.dailyResults && results.dailyResults.length > 0 ? 
+    results.dailyResults[results.dailyResults.length - 1] : null;
+
   return (
     <div className="mt-8">
       <div className="flex justify-between items-center mb-4">
@@ -117,7 +124,69 @@ const SimulationResults = ({ results, numWorkers, targetProfit }) => {
           targetProfit={targetProfit} 
         />
       </div>
+
+      {/* Full Simulation Statistics */}
+      {results.dailyResults && results.dailyResults.length > 0 && (
+        <div className="bg-white p-6 rounded-lg shadow-md mb-8">
+          <h3 className="text-xl font-semibold mb-4">Estadísticas Completas de la Simulación</h3>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <h4 className="font-medium text-lg mb-2">Días Operativos vs. No Operativos</h4>
+              <div className="bg-gray-50 p-4 rounded-md">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm text-gray-500">Total de días simulados:</p>
+                    <p className="font-semibold">{totalDaysSimulated}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Días operativos:</p>
+                    <p className="font-semibold">
+                      {Math.round(totalDaysSimulated * results.operationalPercentage / 100)} ({results.operationalPercentage.toFixed(2)}%)
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Días no operativos:</p>
+                    <p className="font-semibold">
+                      {Math.round(totalDaysSimulated * (100 - results.operationalPercentage) / 100)} ({(100 - results.operationalPercentage).toFixed(2)}%)
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Día final simulado:</p>
+                    <p className="font-semibold">{totalDaysSimulated}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div>
+              <h4 className="font-medium text-lg mb-2">Beneficios Totales</h4>
+              <div className="bg-gray-50 p-4 rounded-md">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm text-gray-500">Beneficio total:</p>
+                    <p className="font-semibold">${results.totalProfit.toFixed(2)}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Beneficio promedio diario:</p>
+                    <p className="font-semibold">${results.averageProfit.toFixed(2)}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Prob. beneficio ≥ ${targetProfit}:</p>
+                    <p className="font-semibold">{results.probabilityOfTargetProfit.toFixed(2)}%</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Trabajadores:</p>
+                    <p className="font-semibold">{numWorkers}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       
+      {/* Daily Results Table */}
       <DailyResultsTable 
         results={results} 
         numWorkers={numWorkers} 

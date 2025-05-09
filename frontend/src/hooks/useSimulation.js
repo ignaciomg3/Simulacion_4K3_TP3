@@ -53,72 +53,61 @@ const useSimulation = () => {
     }
   };
 
-  // Function to run the Monte Carlo simulation
-  const runSimulation = async () => {
-    const inputParams = {
-      numDays,
-      startDay,
-      endDay,
-      numWorkers,
-      dailyRevenue,
-      dailyCosts,
-      workerCost
-    };
-    
-    const validationErrors = validateInputs(inputParams);
-    setErrors(validationErrors);
-    
+// Inside your useSimulation hook - you need to modify the part that calls processApiResults
+// Find this part in your hook:
 
-    if (Object.keys(validationErrors).length > 0) {
-      return;
+const runSimulation = async () => {
+  setIsLoading(true);
+  setApiError(null);
+  setSimulationResults(null);
+
+  try {
+    const response = await fetch('/api/simular', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        n: parseInt(numDays),
+        i: parseInt(startDay),
+        j: parseInt(endDay),
+        obreros_totales: parseInt(numWorkers),
+        valor_venta: parseInt(dailyRevenue),
+        costo_produccion: parseInt(dailyCosts),
+        costo_obrero: parseInt(workerCost),
+        valor_y: parseInt(targetProfit),
+        // Include other parameters here if needed
+        dia_0: distribution[0].frequency,
+        dia_1: distribution[1].frequency,
+        dia_2: distribution[2].frequency,
+        dia_3: distribution[3].frequency,
+        dia_4: distribution[4].frequency,
+        dia_5: distribution[5].frequency,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Error en la simulación');
     }
 
-    // Borramos la data de previa simulacion
-    setSimulationResults(null);
-    setIsLoading(true);
-    setApiError(null);
+    const data = await response.json();
     
-    try {
-
-      // Extraer valores de frecuencia de la distribución
-      const dia_0 = distribution.find(item => item.absent === 0)?.frequency || 0;
-      const dia_1 = distribution.find(item => item.absent === 1)?.frequency || 0;
-      const dia_2 = distribution.find(item => item.absent === 2)?.frequency || 0;
-      const dia_3 = distribution.find(item => item.absent === 3)?.frequency || 0;
-      const dia_4 = distribution.find(item => item.absent === 4)?.frequency || 0;
-      const dia_5 = distribution.find(item => item.absent === 5)?.frequency || 0;
-
-      // Prepare the payload for the API call
-      const payload = {
-        n: numDays,
-        i: startDay,
-        j: endDay,
-        obreros_totales: numWorkers,
-        valor_venta: dailyRevenue,
-        costo_produccion: dailyCosts,
-        costo_obrero: workerCost,
-        valor_y: targetProfit,
-        dia_0: dia_0,
-        dia_1: dia_1,
-        dia_2: dia_2,
-        dia_3: dia_3,
-        dia_4: dia_4,
-        dia_5: dia_5,
-      };
-      
-      // Make the API call
-      const data = await apiRunSimulation(payload);
-      
-      // Process the results from the API
-      const processedResults = processApiResults(data.results);
-      setSimulationResults(processedResults);
-    } catch (error) {
-      console.error('Error running simulation:', error);
-      setApiError(error.toString());
-    } finally {
-      setIsLoading(false);
-    }
-  };
+    // Update this line to pass the simulation parameters
+    const processedResults = processApiResults(data.results, {
+      numDays: parseInt(numDays),
+      startDay: parseInt(startDay),
+      endDay: parseInt(endDay),
+      numWorkers: parseInt(numWorkers)
+    });
+    
+    setSimulationResults(processedResults);
+  } catch (error) {
+    console.error('Simulation error:', error);
+    setApiError(error.message);
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   return {
     // State
