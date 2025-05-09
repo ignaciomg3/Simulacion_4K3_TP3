@@ -37,6 +37,20 @@ const useSimulation = () => {
   const [distributionError, setDistributionError] = useState(null);
   const [isSimulationDisabled, setIsSimulationDisabled] = useState(false);
 
+  // Validate inputs whenever they change
+  useEffect(() => {
+    const validationErrors = validateInputs({
+      numDays,
+      startDay,
+      endDay,
+      numWorkers,
+      dailyRevenue,
+      dailyCosts,
+      workerCost
+    });
+    
+    setErrors(validationErrors);
+  }, [numDays, startDay, endDay, numWorkers, dailyRevenue, dailyCosts, workerCost]);
 
   // Funcion para actualizar la distribución
   const handleDistributionChange = (newDistribution) => {
@@ -53,61 +67,80 @@ const useSimulation = () => {
     }
   };
 
-// Inside your useSimulation hook - you need to modify the part that calls processApiResults
-// Find this part in your hook:
-
-const runSimulation = async () => {
-  setIsLoading(true);
-  setApiError(null);
-  setSimulationResults(null);
-
-  try {
-    const response = await fetch('/api/simular', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        n: parseInt(numDays),
-        i: parseInt(startDay),
-        j: parseInt(endDay),
-        obreros_totales: parseInt(numWorkers),
-        valor_venta: parseInt(dailyRevenue),
-        costo_produccion: parseInt(dailyCosts),
-        costo_obrero: parseInt(workerCost),
-        valor_y: parseInt(targetProfit),
-        // Include other parameters here if needed
-        dia_0: distribution[0].frequency,
-        dia_1: distribution[1].frequency,
-        dia_2: distribution[2].frequency,
-        dia_3: distribution[3].frequency,
-        dia_4: distribution[4].frequency,
-        dia_5: distribution[5].frequency,
-      }),
+  const runSimulation = async () => {
+    // Validate inputs before running simulation
+    const validationErrors = validateInputs({
+      numDays,
+      startDay,
+      endDay,
+      numWorkers,
+      dailyRevenue,
+      dailyCosts,
+      workerCost
     });
-
-    if (!response.ok) {
-      throw new Error('Error en la simulación');
+    
+    // If there are validation errors, update state and don't run simulation
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return;
     }
+    
+    // Check distribution validation
+    if (distributionError) {
+      return;
+    }
+    
+    setIsLoading(true);
+    setApiError(null);
+    setSimulationResults(null);
 
-    const data = await response.json();
-    
-    // Update this line to pass the simulation parameters
-    const processedResults = processApiResults(data.results, {
-      numDays: parseInt(numDays),
-      startDay: parseInt(startDay),
-      endDay: parseInt(endDay),
-      numWorkers: parseInt(numWorkers)
-    });
-    
-    setSimulationResults(processedResults);
-  } catch (error) {
-    console.error('Simulation error:', error);
-    setApiError(error.message);
-  } finally {
-    setIsLoading(false);
-  }
-};
+    try {
+      const response = await fetch('/api/simular', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          n: parseInt(numDays),
+          i: parseInt(startDay),
+          j: parseInt(endDay),
+          obreros_totales: parseInt(numWorkers),
+          valor_venta: parseInt(dailyRevenue),
+          costo_produccion: parseInt(dailyCosts),
+          costo_obrero: parseInt(workerCost),
+          valor_y: parseInt(targetProfit),
+          // Include other parameters here if needed
+          dia_0: distribution[0].frequency,
+          dia_1: distribution[1].frequency,
+          dia_2: distribution[2].frequency,
+          dia_3: distribution[3].frequency,
+          dia_4: distribution[4].frequency,
+          dia_5: distribution[5].frequency,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Error en la simulación');
+      }
+
+      const data = await response.json();
+      
+      // Pass the simulation parameters to processApiResults
+      const processedResults = processApiResults(data.results, {
+        numDays: parseInt(numDays),
+        startDay: parseInt(startDay),
+        endDay: parseInt(endDay),
+        numWorkers: parseInt(numWorkers)
+      });
+      
+      setSimulationResults(processedResults);
+    } catch (error) {
+      console.error('Simulation error:', error);
+      setApiError(error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return {
     // State
